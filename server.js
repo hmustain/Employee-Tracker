@@ -89,6 +89,9 @@ function menu() {
             else if (answers.menu === "Update employee manager") {
                 updateEmployeeMgr();
             }
+            else if (answers.menu === "View employees by manager") {
+                viewByMgr();
+            }
         })
 };
 
@@ -316,4 +319,28 @@ function updateEmployeeMgr() {
             }
         })
 };
+// function viewByMgr() {
+//     inquirer
+//         .prompt([
+//             {
+//                 type: `input`,
+//                 name: `mgr`,
+//                 message: `What is the id of the manager you want to view employees by?`,
+//                 validate: (data) => {
+//                     if (data) {
+//                         return true;
+//                     } else {
+//                         return "You must enter information to continue";
+//                     }
+//                 },
+//             },
+//         ])
+//         .then((answers) => {
+//              {
+//                 db.query('SELECT employees.id, employees.first_name, employees.last_name, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id WHERE manager_id = ?', [answers.mgr], err => {
+//                     viewByMgr();
+//                 })
+//             }
+//         })
+// };
 menu();
