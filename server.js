@@ -27,17 +27,11 @@ const db = mysql.createConnection(
 );
 
 // Query database
-db.query('SELECT * FROM departments', function (err, results) {
-    console.table(results);
-  });
 
-  db.query('SELECT title AS Title, salary AS Salary, department_id AS Department FROM roles LEFT JOIN departments ON department_id = departments.id ', function (err, results) {
-    console.table(results);
-  });
 
-  db.query('SELECT * FROM employees', function (err, results) {
-    console.table(results);
-  });
+
+
+
   
   // Default response for any other request (Not Found)
   app.use((req, res) => {
@@ -73,6 +67,50 @@ function menu() {
                 ]
             }
         ])
+        .then((answers) => {
+            if (answers.menu === "View all departments") {
+                viewDepartments();
+            } else if (answers.menu === "View all roles") {
+                viewRoles();
+            } else if (answers.menu === "View all employees") {
+                viewEmployees();
+            }
+        })
 };
 
+function viewDepartments() {
+ let departments = db.query('SELECT * FROM departments', function (err, departments) {
+        console.table(departments);
+      });
+};
+
+function viewRoles() {
+    db.query('SELECT title AS Title, salary AS Salary, department_id AS Department FROM roles LEFT JOIN departments ON departments.name = departments.id ', function (err, results) {
+        console.table(results);
+      });
+};
+
+function viewEmployees() {
+    db.query('SELECT * FROM employees', function (err, results) {
+        console.table(results);
+      });
+};
+
+function addDepartment() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `adddept`,
+                message: `What is the name of the department you want to add?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+            },
+            },
+        ]);
+};
 menu();
