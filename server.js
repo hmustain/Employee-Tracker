@@ -2,11 +2,6 @@
 const inquirer = require(`inquirer`);
 const fs = require(`fs`);
 
-// empty array for new dept, employees, role
-// const newDept [];
-// const newRole [];
-// const newEmployee [];
-// const newManager [];
 
 const express = require('express');
 // Import and require mysql2
@@ -61,7 +56,7 @@ function menu() {
                     "Add a role",
                     "Add an employee",
                     "Update an employee",
-                    "Update employee managers",
+                    "Update employee manager",
                     "View employees by manager",
                     "View employees by department",
                     "Delete departments",
@@ -91,11 +86,26 @@ function menu() {
             else if (answers.menu === "Update an employee") {
                 updateEmployee();
             }
+            else if (answers.menu === "Update employee manager") {
+                updateEmployeeMgr();
+            }
+            else if (answers.menu === "View employees by manager") {
+                viewByMgr();
+            }
+            else if (answers.menu === "Delete departments") {
+                deleteDept();
+            }
+            else if (answers.menu === "Delete roles") {
+                deleteRole();
+            }
+            else if (answers.menu === "Delete employees") {
+                deleteEmployee();
+            }
         })
 };
 
 function viewDepartments() {
-    let departments = db.query('SELECT * FROM departments', function (err, departments) {
+ db.query('SELECT * FROM departments', function (err, departments) {
         console.table(departments);
         menu();
     });
@@ -279,6 +289,139 @@ function updateEmployee() {
                     viewEmployees();
                 })
             }
+        })
+};
+
+function updateEmployeeMgr() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `emp`,
+                message: `What is the id of the employee you want to update?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+            {
+                type: `input`,
+                name: `updateempmgr`,
+                message: `What is the id of the new manager you want to assign to this employee?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+            if (answers.updateempmgr === "null") {
+                db.query("UPDATE employees SET manager_id = ? WHERE id = ?", [answers.updateempmgr], err => {
+                    viewEmployees();
+                })
+            }
+            else db.query("UPDATE employees SET manager_id = ? WHERE id = ?" , [answers.updateempmgr, answers.emp], err => {
+                viewEmployees();
+            })
+        })
+};
+// function viewByMgr() {
+//     inquirer
+//         .prompt([
+//             {
+//                 type: `input`,
+//                 name: `mgr`,
+//                 message: `What is the id of the manager you want to view employees by?`,
+//                 validate: (data) => {
+//                     if (data) {
+//                         return true;
+//                     } else {
+//                         return "You must enter information to continue";
+//                     }
+//                 },
+//             },
+//         ])
+//         .then((answers) => {
+//              {
+//                 db.query('SELECT employees.id, employees.first_name, employees.last_name, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id WHERE manager_id = ?', [answers.mgr], err => {
+//                     viewByMgr();
+//                 })
+//             }
+//         })
+// };
+
+function deleteDept() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `deleteD`,
+                message: `What is the id of the department you want to delete?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             db.query("DELETE FROM departments where id = ?" , [answers.deleteD], err => {
+                viewDepartments();
+            })
+        })
+};
+
+function deleteRole() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `deleteR`,
+                message: `What is the id of the role you want to delete?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             db.query("DELETE FROM roles where id = ?" , [answers.deleteR], err => {
+                viewRoles();
+            })
+        })
+};
+
+function deleteEmployee() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `deleteE`,
+                message: `What is the id of the employee you want to delete?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             db.query("DELETE FROM employees where id = ?" , [answers.deleteE], err => {
+                viewEmployees();
+            })
         })
 };
 menu();
