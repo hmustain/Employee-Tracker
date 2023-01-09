@@ -92,6 +92,15 @@ function menu() {
             else if (answers.menu === "View employees by manager") {
                 viewByMgr();
             }
+            else if (answers.menu === "Delete departments") {
+                deleteDept();
+            }
+            else if (answers.menu === "Delete roles") {
+                deleteRole();
+            }
+            else if (answers.menu === "Delete employees") {
+                deleteEmployee();
+            }
         })
 };
 
@@ -346,4 +355,73 @@ function updateEmployeeMgr() {
 //             }
 //         })
 // };
+
+function deleteDept() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `deleteD`,
+                message: `What is the id of the department you want to delete?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             db.query("DELETE FROM departments where id = ?" , [answers.deleteD], err => {
+                viewDepartments();
+            })
+        })
+};
+
+function deleteRole() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `deleteR`,
+                message: `What is the id of the role you want to delete?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             db.query("DELETE FROM roles where id = ?" , [answers.deleteR], err => {
+                viewRoles();
+            })
+        })
+};
+
+function deleteEmployee() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `deleteE`,
+                message: `What is the id of the employee you want to delete?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             db.query("DELETE FROM employees where id = ?" , [answers.deleteE], err => {
+                viewEmployees();
+            })
+        })
+};
 menu();
