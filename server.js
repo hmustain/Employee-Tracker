@@ -96,7 +96,7 @@ function menu() {
 };
 
 function viewDepartments() {
-    let departments = db.query('SELECT * FROM departments', function (err, departments) {
+ db.query('SELECT * FROM departments', function (err, departments) {
         console.table(departments);
         menu();
     });
@@ -312,11 +312,14 @@ function updateEmployeeMgr() {
             },
         ])
         .then((answers) => {
-             {
-                db.query("UPDATE employees SET manager_id = ? WHERE id = ?", [answers.updateempmgr, answers.emp], err => {
+            if (answers.updateempmgr === "null") {
+                db.query("UPDATE employees SET manager_id = ? WHERE id = ?", [answers.updateempmgr], err => {
                     viewEmployees();
                 })
             }
+            else db.query("UPDATE employees SET manager_id = ? WHERE id = ?" , [answers.updateempmgr, answers.emp], err => {
+                viewEmployees();
+            })
         })
 };
 // function viewByMgr() {
