@@ -2,11 +2,6 @@
 const inquirer = require(`inquirer`);
 const fs = require(`fs`);
 
-// empty array for new dept, employees, role
-// const newDept [];
-// const newRole [];
-// const newEmployee [];
-// const newManager [];
 
 const express = require('express');
 // Import and require mysql2
@@ -61,7 +56,7 @@ function menu() {
                     "Add a role",
                     "Add an employee",
                     "Update an employee",
-                    "Update employee managers",
+                    "Update employee manager",
                     "View employees by manager",
                     "View employees by department",
                     "Delete departments",
@@ -90,6 +85,9 @@ function menu() {
             }
             else if (answers.menu === "Update an employee") {
                 updateEmployee();
+            }
+            else if (answers.menu === "Update employee manager") {
+                updateEmployeeMgr();
             }
         })
 };
@@ -276,6 +274,43 @@ function updateEmployee() {
         .then((answers) => {
              {
                 db.query("UPDATE employees SET role_id = ? WHERE id = ?", [answers.updateemprole, answers.updateemp], err => {
+                    viewEmployees();
+                })
+            }
+        })
+};
+
+function updateEmployeeMgr() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `emp`,
+                message: `What is the id of the employee you want to update?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+            {
+                type: `input`,
+                name: `updateempmgr`,
+                message: `What is the id of the new manager you want to assign to this employee?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+             {
+                db.query("UPDATE employees SET manager_id = ? WHERE id = ?", [answers.updateempmgr, answers.emp], err => {
                     viewEmployees();
                 })
             }
