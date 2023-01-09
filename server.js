@@ -31,7 +31,7 @@ db.query('SELECT * FROM departments', function (err, results) {
     console.table(results);
   });
 
-  db.query('SELECT title, salary, FROM roles, departments.name as department_name FROM company_db LEFT JOIN departments ON roles.departments=departments.id; ', function (err, results) {
+  db.query('SELECT title AS Title, salary AS Salary, department_id AS Department FROM roles LEFT JOIN departments ON department_id = departments.id ', function (err, results) {
     console.table(results);
   });
 
