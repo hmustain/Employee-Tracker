@@ -8,7 +8,7 @@ VALUES ("Sales"),
 
 -- SELECT FROM departments;
 
--- SELECT e.id, e.first_name, e.last_name, d.name FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id = ?;
+-- SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id = ?;
 -- DATA FOR roles
 INSERT INTO roles (title, salary, department_id)
 VALUES ("Director of Sales", 200000, 1),

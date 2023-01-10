@@ -120,7 +120,7 @@ function viewRoles() {
 };
 
 function viewEmployees() {
-    db.query('SELECT employees.id, employees.first_name, employees.last_name, title, salary, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id ', function (err, results) {
+    db.query('SELECT employees.id, employees.first_name, employees.last_name, title, departments.name AS department, salary, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id LEFT JOIN departments on roles.department_id = departments.id ', function (err, results) {
         console.table(results);
         menu();
     });
