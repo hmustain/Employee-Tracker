@@ -364,33 +364,33 @@ function viewByMgr() {
 
 };
 
-// function viewByDept() {
-//     db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
-//         .then(([rows]) => {
-//             let depts = [];
-//             rows.forEach(dept => {
-//                 depts.push({ name: `${dept.name}`, value: dept.id })
-//             });
-//             inquirer
-//                 .prompt([
-//                     {
-//                         type: `list`,
-//                         name: `dept`,
-//                         message: `What is the id of the manager you want to view employees by?`,
-//                         choices: depts
-//                     },
-//                 ])
-//                 .then((answers) => {
-//                     {
-//                         db.promise().query('SELECT first_name, last_name FROM employees WHERE departments_id FROM departments = ?', [answers.dept], err => {
-//                         }).then(([rows]) => {
-//                             console.table(rows)
-//                             menu();
-//                         });
-//                     }
-//                 })
-//         })
-// }
+function viewByDept() {
+    db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
+        .then(([rows]) => {
+            let depts = [];
+            rows.forEach(dept => {
+                depts.push({ name: `${dept.name}`, value: dept.id })
+            });
+            inquirer
+                .prompt([
+                    {
+                        type: `list`,
+                        name: `dept`,
+                        message: `What is the id of the manager you want to view employees by?`,
+                        choices: depts
+                    },
+                ])
+                .then((answers) => {
+                    {
+                        db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id = ?', [answers.dept], err => {
+                        }).then(([rows]) => {
+                            console.table(rows)
+                            menu();
+                        });
+                    }
+                })
+        })
+}
 
 function deleteDept() {
     inquirer
