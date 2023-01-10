@@ -366,7 +366,7 @@ function viewByMgr() {
         })
 
 };
-
+// working but need to figure out how to give the user a choice
 function viewByDept() {
     // db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
     //     .then(([rows]) => {
@@ -464,6 +464,7 @@ function deleteEmployee() {
         })
 };
 
+// this needs fixed
 function viewBudgetByDept() {
     inquirer
         .prompt([
@@ -482,7 +483,7 @@ function viewBudgetByDept() {
         ])
         .then((answers) => {
             db.query("SELECT department_id, SUM(salary) as budget FROM roles where department_id = ?", [answers.viewBudget], err => {
-                console.table(answers);
+                console.table();
                 menu();
             })
         })
