@@ -105,6 +105,9 @@ function menu() {
             else if (answers.menu === "Delete employees") {
                 deleteEmployee();
             }
+            else if (answers.menu === "View budget by department") {
+                viewBudgetByDept();
+            }
         })
 };
 
@@ -457,6 +460,30 @@ function deleteEmployee() {
         .then((answers) => {
             db.query("DELETE FROM employees where id = ?", [answers.deleteE], err => {
                 viewEmployees();
+            })
+        })
+};
+
+function viewBudgetByDept() {
+    inquirer
+        .prompt([
+            {
+                type: `input`,
+                name: `viewBudget`,
+                message: `What is the id of the department you want to view the budget for?`,
+                validate: (data) => {
+                    if (data) {
+                        return true;
+                    } else {
+                        return "You must enter information to continue";
+                    }
+                },
+            },
+        ])
+        .then((answers) => {
+            db.query("SELECT department_id, SUM(salary) as budget FROM roles where department_id = ?", [answers.viewBudget], err => {
+                console.table(answers);
+                menu();
             })
         })
 };
