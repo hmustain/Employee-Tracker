@@ -1,46 +1,6 @@
-// Include packages needed to run application
 const inquirer = require(`inquirer`);
-const fs = require(`fs`);
-require('dotenv').config();
-
-
-const express = require('express');
-// Import and require mysql2
 const mysql = require('mysql2');
 
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
-// Connect to database
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        // MySQL username,
-        user: process.env.DB_USER,
-        // MySQL password
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
-    },
-    console.log(`Connected to the courses_db database.`)
-);
-
-// Query database
-// i moved these and put them inside functions
-
-
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
 
 function menu() {
     inquirer
@@ -120,7 +80,7 @@ function viewRoles() {
 };
 
 function viewEmployees() {
-    db.query('SELECT employees.id, employees.first_name, employees.last_name, title, salary, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id ', function (err, results) {
+    db.query('SELECT employees.first_name, employees.last_name, title, salary, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id ', function (err, results) {
         console.table(results);
         menu();
     });
@@ -429,4 +389,5 @@ function deleteEmployee() {
             })
         })
 };
-menu();
+
+module.exports = { menu, viewDepartments, viewRoles, viewEmployees, addDepartment, addRole, addEmployee, updateEmployee, updateEmployeeMgr, viewByMgr, deleteDept, deleteRole, deleteEmployee };
