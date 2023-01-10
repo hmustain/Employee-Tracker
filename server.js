@@ -113,7 +113,7 @@ function viewDepartments() {
 };
 
 function viewRoles() {
-    db.query('SELECT title AS Title, salary AS Salary, department_id AS Department FROM roles LEFT JOIN departments ON departments.name = departments.id ', function (err, results) {
+    db.query('SELECT title AS Title, salary AS Salary, departments.name AS Department FROM roles LEFT JOIN departments ON roles.department_id = departments.id ', function (err, results) {
         console.table(results);
         menu();
     });
@@ -332,30 +332,34 @@ function updateEmployeeMgr() {
             })
         })
 };
-// function viewByMgr() {
-//     inquirer
-//         .prompt([
-//             {
-//                 type: `input`,
-//                 name: `mgr`,
-//                 message: `What is the id of the manager you want to view employees by?`,
-//                 validate: (data) => {
-//                     if (data) {
-//                         return true;
-//                     } else {
-//                         return "You must enter information to continue";
-//                     }
-//                 },
-//             },
-//         ])
-//         .then((answers) => {
-//              {
-//                 db.query('SELECT employees.id, employees.first_name, employees.last_name, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id WHERE manager_id = ?', [answers.mgr], err => {
-//                     viewByMgr();
-//                 })
-//             }
-//         })
-// };
+function viewByMgr() {
+    db.promise().query('SELECT DISTINCT e.id, e.first_name, e.last_name FROM employees e left JOIN employees m ON e.id = m.manager_id WHERE m.manager_id IS NOT NULL')
+    .then(([rows]) => {
+        let mgrs = [];
+        rows.forEach(mgr => {
+            mgrs.push({name: `${mgr.first_name} ${mgr.last_name}`, value: mgr.id})
+        });
+        inquirer
+        .prompt([
+            {
+                type: `list`,
+                name: `mgr`,
+                message: `What is the id of the manager you want to view employees by?`,
+                choices: mgrs
+            },
+        ])
+        .then((answers) => {
+             {
+                db.promise().query('SELECT first_name, last_name FROM employees WHERE manager_id = ?', [answers.mgr], err => {
+                }).then(([rows]) => {
+                    console.table(rows)
+                    menu();
+                });
+            }
+        })
+    })
+    
+};
 
 function deleteDept() {
     inquirer
