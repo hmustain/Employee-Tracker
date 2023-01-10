@@ -1,6 +1,7 @@
 // Include packages needed to run application
 const inquirer = require(`inquirer`);
 const fs = require(`fs`);
+require('dotenv').config();
 
 
 const express = require('express');
@@ -19,10 +20,10 @@ const db = mysql.createConnection(
     {
         host: 'localhost',
         // MySQL username,
-        user: 'root',
+        user: process.env.DB_USER,
         // MySQL password
-        password: '',
-        database: 'company_db'
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
     },
     console.log(`Connected to the courses_db database.`)
 );
