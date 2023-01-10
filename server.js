@@ -93,6 +93,9 @@ function menu() {
             else if (answers.menu === "View employees by manager") {
                 viewByMgr();
             }
+            else if (answers.menu === "View employees by department") {
+                viewByDept();
+            }
             else if (answers.menu === "Delete departments") {
                 deleteDept();
             }
@@ -106,14 +109,14 @@ function menu() {
 };
 
 function viewDepartments() {
- db.query('SELECT * FROM departments', function (err, departments) {
+    db.query('SELECT * FROM departments', function (err, departments) {
         console.table(departments);
         menu();
     });
 };
 
 function viewRoles() {
-    db.query('SELECT title AS Title, salary AS Salary, departments.name AS Department FROM roles LEFT JOIN departments ON roles.department_id = departments.id ', function (err, results) {
+    db.query('SELECT roles.id AS Role_ID, title AS Title, salary AS Salary, departments.name AS Department FROM roles LEFT JOIN departments ON roles.department_id = departments.id ', function (err, results) {
         console.table(results);
         menu();
     });
@@ -179,7 +182,7 @@ function addRole() {
             {
                 type: `input`,
                 name: `adddeptid`,
-                message: `What is the id of the role you want to add?`,
+                message: `What is the id of the department this role belongs to?`,
                 validate: (data) => {
                     if (data) {
                         return true;
@@ -285,7 +288,7 @@ function updateEmployee() {
             },
         ])
         .then((answers) => {
-             {
+            {
                 db.query("UPDATE employees SET role_id = ? WHERE id = ?", [answers.updateemprole, answers.updateemp], err => {
                     viewEmployees();
                 })
@@ -327,39 +330,67 @@ function updateEmployeeMgr() {
                     viewEmployees();
                 })
             }
-            else db.query("UPDATE employees SET manager_id = ? WHERE id = ?" , [answers.updateempmgr, answers.emp], err => {
+            else db.query("UPDATE employees SET manager_id = ? WHERE id = ?", [answers.updateempmgr, answers.emp], err => {
                 viewEmployees();
             })
         })
 };
 function viewByMgr() {
     db.promise().query('SELECT DISTINCT e.id, e.first_name, e.last_name FROM employees e left JOIN employees m ON e.id = m.manager_id WHERE m.manager_id IS NOT NULL')
-    .then(([rows]) => {
-        let mgrs = [];
-        rows.forEach(mgr => {
-            mgrs.push({name: `${mgr.first_name} ${mgr.last_name}`, value: mgr.id})
-        });
-        inquirer
-        .prompt([
-            {
-                type: `list`,
-                name: `mgr`,
-                message: `What is the id of the manager you want to view employees by?`,
-                choices: mgrs
-            },
-        ])
-        .then((answers) => {
-             {
-                db.promise().query('SELECT first_name, last_name FROM employees WHERE manager_id = ?', [answers.mgr], err => {
-                }).then(([rows]) => {
-                    console.table(rows)
-                    menu();
-                });
-            }
+        .then(([rows]) => {
+            let mgrs = [];
+            rows.forEach(mgr => {
+                mgrs.push({ name: `${mgr.first_name} ${mgr.last_name}`, value: mgr.id })
+            });
+            inquirer
+                .prompt([
+                    {
+                        type: `list`,
+                        name: `mgr`,
+                        message: `What is the id of the manager you want to view employees by?`,
+                        choices: mgrs
+                    },
+                ])
+                .then((answers) => {
+                    {
+                        db.promise().query('SELECT first_name, last_name FROM employees WHERE manager_id = ?', [answers.mgr], err => {
+                        }).then(([rows]) => {
+                            console.table(rows)
+                            menu();
+                        });
+                    }
+                })
         })
-    })
-    
+
 };
+
+// function viewByDept() {
+//     db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
+//         .then(([rows]) => {
+//             let depts = [];
+//             rows.forEach(dept => {
+//                 depts.push({ name: `${dept.name}`, value: dept.id })
+//             });
+//             inquirer
+//                 .prompt([
+//                     {
+//                         type: `list`,
+//                         name: `dept`,
+//                         message: `What is the id of the manager you want to view employees by?`,
+//                         choices: depts
+//                     },
+//                 ])
+//                 .then((answers) => {
+//                     {
+//                         db.promise().query('SELECT first_name, last_name FROM employees WHERE departments_id FROM departments = ?', [answers.dept], err => {
+//                         }).then(([rows]) => {
+//                             console.table(rows)
+//                             menu();
+//                         });
+//                     }
+//                 })
+//         })
+// }
 
 function deleteDept() {
     inquirer
@@ -378,7 +409,7 @@ function deleteDept() {
             },
         ])
         .then((answers) => {
-             db.query("DELETE FROM departments where id = ?" , [answers.deleteD], err => {
+            db.query("DELETE FROM departments where id = ?", [answers.deleteD], err => {
                 viewDepartments();
             })
         })
@@ -401,7 +432,7 @@ function deleteRole() {
             },
         ])
         .then((answers) => {
-             db.query("DELETE FROM roles where id = ?" , [answers.deleteR], err => {
+            db.query("DELETE FROM roles where id = ?", [answers.deleteR], err => {
                 viewRoles();
             })
         })
@@ -424,7 +455,7 @@ function deleteEmployee() {
             },
         ])
         .then((answers) => {
-             db.query("DELETE FROM employees where id = ?" , [answers.deleteE], err => {
+            db.query("DELETE FROM employees where id = ?", [answers.deleteE], err => {
                 viewEmployees();
             })
         })
