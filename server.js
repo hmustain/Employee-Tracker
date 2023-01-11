@@ -368,20 +368,14 @@ function viewByMgr() {
         })
 
 };
-// working but need to figure out how to give the user a choice
 // the . department is what the name of the column is.. you need to console log to find this
+
 function viewByDept() {
-    db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
+    db.promise().query('SELECT DISTINCT d.name FROM departments d')
         .then(([rows]) => {
             let depts = [];
             rows.forEach(dept => {
-                depts.push({ name: `${dept.Department}`, value: dept.id })
-                // console.log(depts);
-                // console.log(dept.Department);
-                console.log(rows);
-                // console.log(dept.first_name);
-                // console.log(dept.last_name);
- 
+                depts.push({ name: `${dept.name}`, value: dept.name })
             });
             inquirer
                 .prompt([
@@ -394,7 +388,7 @@ function viewByDept() {
                 ])
                 .then((answers) => {
                     {
-                        db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id = ?', [answers.dept], err => {
+                        db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.name = ?', [answers.dept], err => {
                         }).then(([rows]) => {
                             console.table(rows)
                             menu();
@@ -403,6 +397,8 @@ function viewByDept() {
                 })
         }
         )}
+
+
 
 function deleteDept() {
     inquirer
