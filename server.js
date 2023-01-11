@@ -473,7 +473,6 @@ function deleteEmployee() {
         })
 };
 
-// this needs fixed
 function viewBudgetByDept() {
     db.query('SELECT departments.name AS Department,  SUM(roles.salary) AS Salary  FROM roles INNER JOIN departments ON roles.department_id = departments.id GROUP BY departments.name ORDER BY Salary DESC', function (err, budget) {
         console.table(budget);
