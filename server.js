@@ -370,19 +370,22 @@ function viewByMgr() {
 };
 // working but need to figure out how to give the user a choice
 function viewByDept() {
-    // db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
-    //     .then(([rows]) => {
-    //         let depts = [];
-    //         depts.forEach(dept => {
-    //             depts.push({ name: `${dept.name}`, value: dept.id })
-    //         });
+    db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
+        .then(([rows]) => {
+            let depts = [];
+            console.log(rows);
+            rows.forEach(dept => {
+                depts.push({ name: `${dept.Department}`, value: dept.id })
+                console.log(dept.Department);
+ 
+            });
             inquirer
                 .prompt([
                     {
-                        type: `input`,
+                        type: `list`,
                         name: `dept`,
-                        message: `What is the department you wish to view employees by?`
-                        // choices: depts
+                        message: `What is the department you wish to view employees by?`,
+                        choices: depts
                     },
                 ])
                 .then((answers) => {
@@ -395,7 +398,7 @@ function viewByDept() {
                     }
                 })
         }
-        // )}
+        )}
 
 function deleteDept() {
     inquirer
