@@ -375,11 +375,14 @@ function viewByDept() {
         .then(([rows]) => {
             let depts = [];
             rows.forEach(dept => {
-                if (!depts.some(d => d.name === dept.Department)) {
-                    depts.push({ name: `${dept.Department}`, value: dept.id });
-                }
+                depts.push({ name: `${dept.Department}`, value: dept.id })
+                // console.log(depts);
+                // console.log(dept.Department);
+                console.log(rows);
+                // console.log(dept.first_name);
+                // console.log(dept.last_name);
+ 
             });
-            
             inquirer
                 .prompt([
                     {
@@ -472,26 +475,9 @@ function deleteEmployee() {
 
 // this needs fixed
 function viewBudgetByDept() {
-    inquirer
-        .prompt([
-            {
-                type: `input`,
-                name: `viewBudget`,
-                message: `What is the id of the department you want to view the budget for?`,
-                validate: (data) => {
-                    if (data) {
-                        return true;
-                    } else {
-                        return "You must enter information to continue";
-                    }
-                },
-            },
-        ])
-        .then((answers) => {
-            db.query("SELECT department_id, SUM(salary) as budget FROM roles where department_id = ?", [answers.viewBudget], err => {
-                console.table();
-                menu();
-            })
-        })
+    db.query('SELECT departments.name AS Department,  SUM(roles.salary) AS Salary  FROM roles INNER JOIN departments ON roles.department_id = departments.id GROUP BY departments.name ORDER BY Salary DESC', function (err, budget) {
+        console.table(budget);
+        menu();
+    });
 };
 menu();
