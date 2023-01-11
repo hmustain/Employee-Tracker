@@ -369,16 +369,17 @@ function viewByMgr() {
 
 };
 // working but need to figure out how to give the user a choice
+// the . department is what the name of the column is.. you need to console log to find this
 function viewByDept() {
     db.promise().query('SELECT e.id, e.first_name, e.last_name, d.name AS Department FROM employees e LEFT JOIN roles r ON e.role_id = r.id LEFT JOIN departments d ON r.department_id = d.id WHERE d.id IS NOT NULL')
         .then(([rows]) => {
             let depts = [];
-            console.log(rows);
             rows.forEach(dept => {
-                depts.push({ name: `${dept.Department}`, value: dept.id })
-                console.log(dept.Department);
- 
+                if (!depts.some(d => d.name === dept.Department)) {
+                    depts.push({ name: `${dept.Department}`, value: dept.id });
+                }
             });
+            
             inquirer
                 .prompt([
                     {
