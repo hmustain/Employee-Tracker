@@ -1,21 +1,11 @@
 // Include packages needed to run application
 const inquirer = require(`inquirer`);
-const fs = require(`fs`);
+// const fs = require(`fs`);
 require('dotenv').config();
 const cTable = require('console.table');
 
-
-
-const express = require('express');
 // Import and require mysql2
 const mysql = require('mysql2');
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // Connect to database
 const db = mysql.createConnection(
@@ -30,20 +20,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the courses_db database.`)
 );
 
-// Query database
-// i moved these and put them inside functions
-
-
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
+// creating a function for the menu. this will display the list of options for the user
 function menu() {
     inquirer
         .prompt([
@@ -113,27 +90,28 @@ function menu() {
         })
 };
 
+// function to view departments
 function viewDepartments() {
     db.query('SELECT * FROM departments', function (err, departments) {
         console.table(departments);
         menu();
     });
 };
-
+// function to view roles
 function viewRoles() {
     db.query('SELECT roles.id AS Role_ID, title AS Title, salary AS Salary, departments.name AS Department FROM roles LEFT JOIN departments ON roles.department_id = departments.id ', function (err, results) {
         console.table(results);
         menu();
     });
 };
-
+// function to view employees
 function viewEmployees() {
     db.query('SELECT employees.id, employees.first_name, employees.last_name, title, departments.name AS department, salary, CONCAT(m.first_name, " ", m.last_name) AS Manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN employees AS m ON employees.manager_id = m.id LEFT JOIN departments on roles.department_id = departments.id ', function (err, results) {
         console.table(results);
         menu();
     });
 };
-
+// function to add a department
 function addDepartment() {
     inquirer
         .prompt([
@@ -156,7 +134,7 @@ function addDepartment() {
             })
         })
 };
-
+// function to add a role
 function addRole() {
     inquirer
         .prompt([
@@ -203,6 +181,7 @@ function addRole() {
             })
         })
 };
+// function to add an employee
 function addEmployee() {
     inquirer
         .prompt([
@@ -263,7 +242,7 @@ function addEmployee() {
             }
         })
 };
-
+// function to update an employee
 function updateEmployee() {
     inquirer
         .prompt([
@@ -300,7 +279,7 @@ function updateEmployee() {
             }
         })
 };
-
+// function to update an employee manager (bonus)
 function updateEmployeeMgr() {
     inquirer
         .prompt([
@@ -340,6 +319,7 @@ function updateEmployeeMgr() {
             })
         })
 };
+// function to view employees by manager (bonus)
 function viewByMgr() {
     db.promise().query('SELECT DISTINCT e.id, e.first_name, e.last_name FROM employees e left JOIN employees m ON e.id = m.manager_id WHERE m.manager_id IS NOT NULL')
         .then(([rows]) => {
@@ -368,8 +348,7 @@ function viewByMgr() {
         })
 
 };
-// the . department is what the name of the column is.. you need to console log to find this
-
+// function to view employees by department (bonus)
 function viewByDept() {
     db.promise().query('SELECT DISTINCT d.name FROM departments d')
         .then(([rows]) => {
@@ -397,9 +376,7 @@ function viewByDept() {
                 })
         }
         )}
-
-
-
+// function to delete a department (bonus)
 function deleteDept() {
     inquirer
         .prompt([
@@ -422,7 +399,7 @@ function deleteDept() {
             })
         })
 };
-
+// function to delete a role (bonus)
 function deleteRole() {
     inquirer
         .prompt([
@@ -445,7 +422,7 @@ function deleteRole() {
             })
         })
 };
-
+// function to delete an employee (bonus)
 function deleteEmployee() {
     inquirer
         .prompt([
@@ -468,11 +445,12 @@ function deleteEmployee() {
             })
         })
 };
-
+// function to view the budget of all departments (bonus)
 function viewBudgetByDept() {
     db.query('SELECT departments.name AS Department,  SUM(roles.salary) AS Salary  FROM roles INNER JOIN departments ON roles.department_id = departments.id GROUP BY departments.name ORDER BY Salary DESC', function (err, budget) {
         console.table(budget);
         menu();
     });
 };
+// calls the menu function which starts everything 
 menu();
