@@ -38,6 +38,7 @@ For this application to work, the user will have to install the following packag
 To use this package, make sure you are in the correct folder, first login to MYSQL and source the schema and seed file. Then run node on the server.js file. Once node is initiated a series of questions will appear for the user to answer. From there just answer the questions you wish to answer.
 
 Instruction video included.
+https://www.loom.com/share/93319eafa9bb4c9b9e37cf93c8e3bac5
 
 ## Credits
 Myself, classmates, ASKBCS, tutor, instructor and all ta's.
